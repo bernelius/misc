@@ -31,7 +31,7 @@ pacman -Syu --noconfirm \
 	pv \
 	go \
 	yazi \
-	cargo
+	cargo || { echo "pacman failed, aborting script."; exit 1; }
 
 #creating sudo group
 if ! getent group sudo > /dev/null; then
@@ -42,8 +42,9 @@ fi
 sed -i 's/^#\s*\(%sudo\s\+ALL=(ALL:ALL)\s\+ALL\)/\1/' /etc/sudoers
 
 echo "------------------------"
+echo ""
 read -rp "Enter your new username: " USERNAME
-echo "------------------------"
+echo ""
 
 useradd -m -G sudo "$USERNAME"
 
@@ -73,9 +74,10 @@ runuser -l "$USERNAME" -c '
 	git remote set-url origin git@github.com:bernelius/dotfiles.git
 
 	echo "------------------------"
+	echo ""
 	read -rp "Enter github email address: " EMAIL
 	read -rp "Enter github name to use for commits: " GITNAME
-	echo "------------------------"
+	echo ""
 
 	git config --global user.email "$EMAIL"
 	git config --global user.name "$GITNAME"
@@ -84,12 +86,15 @@ runuser -l "$USERNAME" -c '
 	eval `ssh-agent`
 	ssh-add ~/.ssh/id_ed25519
 	cat ~/.ssh/id_ed25519.pub | win32yank.exe -i
+	echo "------------------------"
 	echo "ssh key copied to windows clipboard. Go to github.com/settings/keys to paste it"
+	echo "------------------------"
 '
 
 #deletes temporary passwordless sudo access
 rm /etc/sudoers.d/temp_user_010101
 echo "------------------------"
+echo ""
 passwd "$USERNAME"
 echo "------------------------"
 su - "$USERNAME"
