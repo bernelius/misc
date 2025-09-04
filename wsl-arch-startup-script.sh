@@ -41,6 +41,7 @@ pacman -Syu --noconfirm \
 	pv \
 	go \
 	yazi \
+	fastfetch \
 	cargo || { echo "pacman failed, aborting script."; exit 1; }
 
 #creating sudo group
