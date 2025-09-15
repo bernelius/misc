@@ -31,6 +31,8 @@ pacman -Syu --noconfirm \
 	tmux \
 	openssh \
 	ripgrep \
+	fd \
+	zoxide \
 	lazygit \
 	fzf \
 	npm \
