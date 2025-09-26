@@ -84,13 +84,15 @@ echo "$USERNAME ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers.d/temp_user_010101
 
 runuser -l "$USERNAME" -c '
 	cd ~
-	git clone https://aur.archlinux.org/yay-git.git
-	cd yay-git
+	git clone https://aur.archlinux.org/yay.git
+	cd yay
 	makepkg -si --noconfirm
-	rm -rf ~/yay-git
+	rm -rf ~/yay
+
+	yay -S fswatch --noconfirm
 '
 
-yay -S fswatch --noconfirm
+
 
 #if wsl, clone win32yank
 if grep -qi microsoft /proc/sys/kernel/osrelease; then
