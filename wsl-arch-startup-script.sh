@@ -89,6 +89,9 @@ runuser -l "$USERNAME" -c '
 	makepkg -si --noconfirm
 	rm -rf ~/yay-git
 '
+
+yay -S fswatch --noconfirm
+
 #if wsl, clone win32yank
 if grep -qi microsoft /proc/sys/kernel/osrelease; then
 	mkdir -p /usr/local/bin
