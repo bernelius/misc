@@ -89,7 +89,9 @@ runuser -l "$USERNAME" -c '
 	makepkg -si --noconfirm
 	rm -rf ~/yay
 
-	yay -S fswatch --noconfirm
+	yay -S --noconfirm \
+                fswatch \
+                sesh-bin \
 '
 
 
