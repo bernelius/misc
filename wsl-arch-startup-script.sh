@@ -92,8 +92,7 @@ runuser -l "$USERNAME" -c '
 	yay -S --noconfirm \
                 fswatch \
                 sesh-bin \
-'
-
+                gitmux-git'
 
 
 #if wsl, clone win32yank
