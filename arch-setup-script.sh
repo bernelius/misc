@@ -53,6 +53,9 @@ pacman -Syu --noconfirm \
   yazi \
   fastfetch \
   eza \
+  postgresql \
+  meson \
+  ninja \
   cargo || { echo "pacman failed, aborting script."; exit 1; }
 
 if ! grep -qi microsoft /proc/sys/kernel/osrelease; then
@@ -66,6 +69,7 @@ if ! grep -qi microsoft /proc/sys/kernel/osrelease; then
     wireplumber \
     hyprland \
     hyprpaper \
+    hyprlock \
     firefox \
     waybar \
     ttf-jetbrains-mono-nerd \
@@ -74,7 +78,9 @@ if ! grep -qi microsoft /proc/sys/kernel/osrelease; then
     dolphin \
     wpctl \
     playerctl \
-    wl-clipboard
+    xorg-xwayland \
+    wl-clipboard \
+    cliphist 
     || { echo "pacman failed, aborting script."; exit 1; }
 fi
 
@@ -228,6 +234,20 @@ else
   mkdir -p ~/docs/img/wallpapers
   cp ~/tmp/misc/wallpapers/* ~/docs/img/wallpapers/
   rm -rf ~/tmp/misc
+
+  git clone https://git.sr.ht/~kennylevinsen/autologin ~/tmp/autologin
+  cd ~/tmp/autologin
+  meson build
+  ninja -C build
+
+  SERVICE_FILE="autologin.service"
+  sed -i "s|^ExecStart=.*|ExecStart=autologin $USER Hyprland|" "$SERVICE_FILE"
+  
+  sudo mkdir -p /etc/pam.d
+  sudo mkdir -p /etc/systemd/system
+  sudo cp build/autologin /etc/pam.d/autologin
+  sudo cp "$SERVICE_FILE" /etc/systemd/system/
+  rm -rf ~/tmp/autologin
 
   read -rp "Done. Press enter to reboot." ANSWER
   if [[ -z "$ANSWER" ]]; then
