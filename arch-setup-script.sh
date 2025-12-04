@@ -59,6 +59,8 @@ pacman -Syu --noconfirm \
   cargo || { echo "pacman failed, aborting script."; exit 1; }
 
 if ! grep -qi microsoft /proc/sys/kernel/osrelease; then
+  #uncomment multilib
+  sed -i '/\[multilib\]/,/Include/ s/^#//' /etc/pacman.conf
   pacman -Syu --noconfirm \
     brightnessctl \
     pipewire-audio \
@@ -80,7 +82,9 @@ if ! grep -qi microsoft /proc/sys/kernel/osrelease; then
     playerctl \
     xorg-xwayland \
     wl-clipboard \
-    cliphist 
+    cliphist \
+    lib32-mesa \
+    steam
     || { echo "pacman failed, aborting script."; exit 1; }
 fi
 
