@@ -1,17 +1,23 @@
 #!/bin/bash
 
 #if you want to exit on error
-#set -e
+
+# exit on error, undefined variable and pipefail
+set -euo pipefail
 
 #set -x will unsilence commands
 #set -x
 
+if ! grep -qi microsoft /proc/sys/kernel/osrelease; then
+  pacman -Syu --noconfirm timeshift || { echo "pacman failed, aborting script."; exit 1; }
+  timeshift --create --comments "Pre-install script backup"
+fi
 
 prompt_username() {
   echo "------------------------"
   echo ""
   read -rp "Enter your new username: " USERNAME
-  echo ""
+  echo "e"
   echo "------------------------"
 }
 
@@ -85,7 +91,7 @@ while true; do
   prompt_username
   echo "Is this username correct: '$USERNAME'? (Y/n)"
   read answer
-  answer=${answer:-Y}
+  answer=${answer:-N}
   case "$answer" in
     [Yy]*)
       break
@@ -193,7 +199,7 @@ runuser -l "$USERNAME" -c '
   git config --global user.name "$GITNAME"
 
   ssh-keygen -t ed25519 -C "$EMAIL" -f ~/.ssh/id_ed25519 -N ""
-  eval `ssh-agent`
+  eval "$(ssh-agent -s)"
   ssh-add ~/.ssh/id_ed25519
   cat ~/.ssh/id_ed25519.pub | $CLIPBOARD
   echo ""
@@ -217,7 +223,12 @@ if grep -qi microsoft /proc/sys/kernel/osrelease; then
   echo "Welcome."
 else
   git clone git@github.com:bernelius/.secrets.git ~/.secrets
-  wget -r https://raw.githubusercontent.com/bernelius/misc/refs/heads/main/wallpapers -P ~/docs/img/wallpapers
+
+  git clone git@github.com/bernelius/misc ~/tmp/misc
+  mkdir -p ~/docs/img/wallpapers
+  cp ~/tmp/misc/wallpapers/* ~/docs/img/wallpapers/
+  rm -rf ~/tmp/misc
+
   read -rp "Done. Press enter to reboot." ANSWER
   if [[ -z "$ANSWER" ]]; then
     reboot
