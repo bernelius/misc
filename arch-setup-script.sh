@@ -29,7 +29,7 @@ pacman -Syu --noconfirm \
   unzip \
   base-devel \
   git \
-  gh \
+  github-cli \
   neovim \
   curl \
   zsh \
@@ -46,6 +46,7 @@ pacman -Syu --noconfirm \
   npm \
   python \
   mc \
+  man \
   wget \
   htop \
   pv \
@@ -56,36 +57,14 @@ pacman -Syu --noconfirm \
   postgresql \
   meson \
   ninja \
+  nix \
+  direnv \
   cargo || { echo "pacman failed, aborting script."; exit 1; }
 
 if ! grep -qi microsoft /proc/sys/kernel/osrelease; then
   #uncomment multilib
   sed -i '/\[multilib\]/,/Include/ s/^#//' /etc/pacman.conf
-  pacman -Syu --noconfirm \
-    brightnessctl \
-    pipewire-audio \
-    pipewire-alsa \
-    dunst \
-    pipewire \
-    pipewire-docs \
-    wireplumber \
-    hyprland \
-    hyprpaper \
-    hyprlock \
-    firefox \
-    waybar \
-    ttf-jetbrains-mono-nerd \
-    ghostty \
-    wofi \
-    dolphin \
-    wpctl \
-    playerctl \
-    xorg-xwayland \
-    wl-clipboard \
-    cliphist \
-    lib32-mesa \
-    steam
-    || { echo "pacman failed, aborting script."; exit 1; }
+  ./tuxedo-pacman-installer.sh
 fi
 
 
@@ -116,10 +95,12 @@ done
 
 useradd -m -G sudo "$USERNAME"
 
-cat <<EOF > /etc/wsl.conf
-[user]
-default=$USERNAME
-EOF
+if grep -qi microsoft /proc/sys/kernel/osrelease; then
+  cat <<-EOF > /etc/wsl.conf
+  [user]
+  default=$USERNAME
+  EOF
+fi
 
 #adds temporary sudo access to everything with no password
 echo "$USERNAME ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers.d/temp_user_010101
@@ -132,7 +113,6 @@ runuser -l "$USERNAME" -c '
   rm -rf ~/yay
 
   yay -S --noconfirm \
-    fswatch \
     sesh-bin \
     gitmux-git
 
@@ -141,7 +121,11 @@ runuser -l "$USERNAME" -c '
       cable \
       tuxedo-control-center-bin \
       tuxedo-drivers-dkms \
-      linux-headers
+      catppuccin-gtk-theme-mocha \
+      grimblast-git \
+      localsend \
+      vesktop \
+      webapp-manager
   fi
 '
 
@@ -173,7 +157,7 @@ runuser -l "$USERNAME" -c '
   if grep -qi microsoft /proc/sys/kernel/osrelease; then
     CLIPBOARD="win32yank.exe -i"
   else
-    CLIPBOARD=wl-copy
+    CLIPBOARD="echo > /dev/null"
   fi 
 
   cd ~
@@ -215,6 +199,7 @@ runuser -l "$USERNAME" -c '
   echo ""
   echo ""
   echo "ssh key copied to clipboard. Go to github.com/settings/keys to paste it"
+  echo "If you do not have a clipboard, you can find the public key file at ~/.ssh/id_ed25519.pub"
   echo ""
   echo ""
 '
@@ -232,26 +217,15 @@ chsh -s /bin/zsh
 if grep -qi microsoft /proc/sys/kernel/osrelease; then
   echo "Welcome."
 else
-  git clone git@github.com:bernelius/.secrets.git ~/.secrets
+  git clone https://www.github.com/bernelius/.secrets ~/.secrets
+  cd ~/.secrets
+  git remote set-url origin git@github.com:bernelius/secrets.git
 
-  git clone git@github.com/bernelius/misc ~/tmp/misc
+  git clone https://www.github.com/bernelius/misc ~/tmp/misc
+  cd ~/tmp/misc
   mkdir -p ~/docs/img/wallpapers
   cp ~/tmp/misc/wallpapers/* ~/docs/img/wallpapers/
   rm -rf ~/tmp/misc
-
-  git clone https://git.sr.ht/~kennylevinsen/autologin ~/tmp/autologin
-  cd ~/tmp/autologin
-  meson build
-  ninja -C build
-
-  SERVICE_FILE="autologin.service"
-  sed -i "s|^ExecStart=.*|ExecStart=autologin $USER Hyprland|" "$SERVICE_FILE"
-  
-  sudo mkdir -p /etc/pam.d
-  sudo mkdir -p /etc/systemd/system
-  sudo cp build/autologin /etc/pam.d/autologin
-  sudo cp "$SERVICE_FILE" /etc/systemd/system/
-  rm -rf ~/tmp/autologin
 
   read -rp "Done. Press enter to reboot." ANSWER
   if [[ -z "$ANSWER" ]]; then
