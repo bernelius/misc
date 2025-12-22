@@ -88,7 +88,6 @@ python-pywal \
 qt6-wayland \
 qt6ct \
 ripgrep \
-rust \
 satty \
 scdoc \
 slurp \
@@ -114,5 +113,7 @@ zoxide \
 zram-generator \
 zsh \
 zsh-completions \
-zsh-syntax-highlighting || { echo "pacman failed, aborting script."; exit 1; }
+zsh-syntax-highlighting \
+calibre \
+chrony || { echo "pacman failed, aborting script."; exit 1; }
 

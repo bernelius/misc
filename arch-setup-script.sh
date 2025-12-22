@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 #if you want to exit on error
 
@@ -59,6 +59,7 @@ pacman -Syu --noconfirm \
   ninja \
   nix \
   direnv \
+  rustup \
   cargo || { echo "pacman failed, aborting script."; exit 1; }
 
 if ! grep -qi microsoft /proc/sys/kernel/osrelease; then
@@ -73,6 +74,7 @@ if ! getent group sudo > /dev/null; then
   echo "Creating sudo group..."
   groupadd sudo
 fi
+
 #uncommenting sudo line in sudoers
 sed -i 's/^#\s*\(%sudo\s\+ALL=(ALL:ALL)\s\+ALL\)/\1/' /etc/sudoers
 
@@ -95,12 +97,12 @@ done
 
 useradd -m -G sudo "$USERNAME"
 
-if grep -qi microsoft /proc/sys/kernel/osrelease; then
-  cat <<-EOF > /etc/wsl.conf
-  [user]
-  default=$USERNAME
-  EOF
-fi
+#if grep -qi microsoft /proc/sys/kernel/osrelease; then
+#  cat <<-EOF > /etc/wsl.conf
+#  [user]
+#  default=$USERNAME
+#  EOF
+#fi
 
 #adds temporary sudo access to everything with no password
 echo "$USERNAME ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers.d/temp_user_010101
@@ -125,7 +127,13 @@ runuser -l "$USERNAME" -c '
       grimblast-git \
       localsend \
       vesktop \
-      webapp-manager
+      webapp-manager \
+    yay -R --noconfirm \
+      vesktop-debug
+    yay -S --noconfirm \
+      pgadmin4-server \
+      pgadmin4-desktop
+    yay -R --noconfirm pgadmin4-debug
   fi
 '
 
@@ -141,9 +149,6 @@ if grep -qi microsoft /proc/sys/kernel/osrelease; then
 fi
 
 #sets up github ssh and clones the bernelius/dotfiles repo
-
-
-
 runuser -l "$USERNAME" -c '
   prompt_github_details() {
     echo "------------------------"
@@ -204,6 +209,23 @@ runuser -l "$USERNAME" -c '
   echo ""
 '
 
+# daemons and groups
+if ! grep -qi microsoft /proc/sys/kernel/osrelease; then
+  runuser -l "$USERNAME" -c '
+    systemctl enable iwd
+    groupadd impala
+    usermod -aG impala $USER
+    chown $(which impala) root:impala
+    chmod 4750 $(which impala)
+    systemctl enable bluetooth
+    groupadd nix-users
+    usermod -aG nix-users $USER
+    systemctl enable nix-daemon
+    systemctl enable chronyd
+    systemctl --user enable hyprpolkitagent
+  '
+fi
+
 #deletes temporary passwordless sudo access
 rm /etc/sudoers.d/temp_user_010101
 echo "------------------------"
@@ -212,23 +234,19 @@ echo "Set up a password for your linux user account ($USERNAME)"
 passwd "$USERNAME"
 echo ""
 echo "------------------------"
-su - "$USERNAME"
-chsh -s /bin/zsh
+runuser -l "$USERNAME" -c 'chsh -s /bin/zsh'
 if grep -qi microsoft /proc/sys/kernel/osrelease; then
   echo "Welcome."
 else
-  git clone https://www.github.com/bernelius/.secrets ~/.secrets
-  cd ~/.secrets
-  git remote set-url origin git@github.com:bernelius/secrets.git
-
-  git clone https://www.github.com/bernelius/misc ~/tmp/misc
-  cd ~/tmp/misc
-  mkdir -p ~/docs/img/wallpapers
-  cp ~/tmp/misc/wallpapers/* ~/docs/img/wallpapers/
-  rm -rf ~/tmp/misc
+  git clone https://www.github.com/bernelius/misc /tmp/misc
+  cd /tmp/misc
+  mkdir -p /home/"$USERNAME"/docs/img/wallpapers
+  cp /tmp/misc/wallpapers/* /home/"$USERNAME"/docs/img/wallpapers/
+  rm -rf /tmp/misc
 
   read -rp "Done. Press enter to reboot." ANSWER
   if [[ -z "$ANSWER" ]]; then
     reboot
   fi
 fi
+
