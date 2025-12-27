@@ -45,6 +45,7 @@ pacman -Syu --noconfirm \
   fzf \
   npm \
   python \
+  python-uv \
   mc \
   man \
   wget \
@@ -60,12 +61,18 @@ pacman -Syu --noconfirm \
   nix \
   direnv \
   rustup \
-  cargo || { echo "pacman failed, aborting script."; exit 1; }
+  cargo \
+  libappindicator || { echo "pacman failed, aborting script."; exit 1; }
 
 if ! grep -qi microsoft /proc/sys/kernel/osrelease; then
   #uncomment multilib
   sed -i '/\[multilib\]/,/Include/ s/^#//' /etc/pacman.conf
   ./tuxedo-pacman-installer.sh
+  #EOF needs to be all the way left or bash will get confused
+  cat <<EOF >> /etc/NetworkManager/conf.d/wifi_backend.conf
+[device]
+wifi.backend=iwd
+EOF
 fi
 
 
@@ -97,12 +104,13 @@ done
 
 useradd -m -G sudo "$USERNAME"
 
-#if grep -qi microsoft /proc/sys/kernel/osrelease; then
-#  cat <<-EOF > /etc/wsl.conf
-#  [user]
-#  default=$USERNAME
-#  EOF
-#fi
+#EOF needs to be all the way left or bash will get confused
+if grep -qi microsoft /proc/sys/kernel/osrelease; then
+  cat <<EOF > /etc/wsl.conf
+[user]
+default=$USERNAME
+EOF
+fi
 
 #adds temporary sudo access to everything with no password
 echo "$USERNAME ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers.d/temp_user_010101
@@ -211,6 +219,7 @@ runuser -l "$USERNAME" -c '
 
 # daemons and groups
 if ! grep -qi microsoft /proc/sys/kernel/osrelease; then
+  runuser -l postgres -c 'initdb -D /var/lib/postgres/data'
   runuser -l "$USERNAME" -c '
     systemctl enable iwd
     groupadd impala
@@ -223,6 +232,7 @@ if ! grep -qi microsoft /proc/sys/kernel/osrelease; then
     systemctl enable nix-daemon
     systemctl enable chronyd
     systemctl --user enable hyprpolkitagent
+    systemctl enable postgresql
   '
 fi
 
