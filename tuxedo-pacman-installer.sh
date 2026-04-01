@@ -94,7 +94,8 @@ slurp \
 sof-firmware \
 steam \
 thunderbird \
-timeshift \
+snapper \
+snap-pac \
 tmux \
 tree-sitter-cli \
 ttf-jetbrains-mono-nerd \
@@ -115,5 +116,7 @@ zsh \
 zsh-completions \
 zsh-syntax-highlighting \
 calibre \
+swayosd \
+tailscale \
 chrony || { echo "pacman failed, aborting script."; exit 1; }
 

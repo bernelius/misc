@@ -30,6 +30,7 @@ pacman -Syu --noconfirm \
   base-devel \
   git \
   github-cli \
+  stow \
   neovim \
   curl \
   zsh \
@@ -58,7 +59,6 @@ pacman -Syu --noconfirm \
   postgresql \
   meson \
   ninja \
-  nix \
   direnv \
   rustup \
   cargo \
@@ -72,6 +72,11 @@ if ! grep -qi microsoft /proc/sys/kernel/osrelease; then
   cat <<EOF >> /etc/NetworkManager/conf.d/wifi_backend.conf
 [device]
 wifi.backend=iwd
+EOF
+
+  cat <<EOF >> /etc/NetworkManager/conf.d/99-tailscale.conf
+[keyfile]
+unmanaged-devices=interface-name:tailscale0
 EOF
 fi
 
@@ -103,6 +108,8 @@ while true; do
 done
 
 useradd -m -G sudo "$USERNAME"
+#enables systemctl --user enable to persist across reboots
+loginctl enable-linger "$USERNAME"
 
 #EOF needs to be all the way left or bash will get confused
 if grep -qi microsoft /proc/sys/kernel/osrelease; then
@@ -134,14 +141,10 @@ runuser -l "$USERNAME" -c '
       catppuccin-gtk-theme-mocha \
       grimblast-git \
       localsend \
-      vesktop \
       webapp-manager \
-    yay -R --noconfirm \
-      vesktop-debug
-    yay -S --noconfirm \
+      gazelle-tui \
       pgadmin4-server \
       pgadmin4-desktop
-    yay -R --noconfirm pgadmin4-debug
   fi
 '
 
@@ -222,14 +225,7 @@ if ! grep -qi microsoft /proc/sys/kernel/osrelease; then
   runuser -l postgres -c 'initdb -D /var/lib/postgres/data'
   runuser -l "$USERNAME" -c '
     systemctl enable iwd
-    groupadd impala
-    usermod -aG impala $USER
-    chown $(which impala) root:impala
-    chmod 4750 $(which impala)
     systemctl enable bluetooth
-    groupadd nix-users
-    usermod -aG nix-users $USER
-    systemctl enable nix-daemon
     systemctl enable chronyd
     systemctl --user enable hyprpolkitagent
     systemctl enable postgresql
