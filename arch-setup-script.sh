@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 
-#if you want to exit on error
-
 # exit on error, undefined variable and pipefail
 set -euo pipefail
 
@@ -9,72 +7,73 @@ set -euo pipefail
 #set -x
 
 if ! grep -qi microsoft /proc/sys/kernel/osrelease; then
-  pacman -Syu --noconfirm timeshift || { echo "pacman failed, aborting script."; exit 1; }
-  timeshift --create --comments "Pre-install script backup"
+    pacman -Syu --noconfirm timeshift || { echo "pacman failed, aborting script."; exit 1; }
+    timeshift --create --comments "Pre-install script backup"
 fi
 
 prompt_username() {
-  echo "------------------------"
-  echo ""
-  read -rp "Enter your new username: " USERNAME
-  echo "e"
-  echo "------------------------"
+    echo "------------------------"
+    echo ""
+    read -rp "Enter your new username: " USERNAME
+    echo "e"
+    echo "------------------------"
 }
 
 
 
 echo "Installing packages..."
 pacman -Syu --noconfirm \
-  sudo \
-  unzip \
-  base-devel \
-  git \
-  github-cli \
-  stow \
-  neovim \
-  curl \
-  zsh \
-  zsh-completions \
-  git-zsh-completion \
-  zsh-syntax-highlighting \
-  tmux \
-  openssh \
-  ripgrep \
-  fd \
-  zoxide \
-  lazygit \
-  fzf \
-  npm \
-  python \
-  python-uv \
-  mc \
-  man \
-  wget \
-  htop \
-  pv \
-  go \
-  yazi \
-  fastfetch \
-  eza \
-  postgresql \
-  meson \
-  ninja \
-  direnv \
-  rustup \
-  cargo \
-  libappindicator || { echo "pacman failed, aborting script."; exit 1; }
+    sudo \
+    unzip \
+    base-devel \
+    git \
+    github-cli \
+    stow \
+    neovim \
+    bob \
+    curl \
+    zsh \
+    zsh-completions \
+    git-zsh-completion \
+    zsh-syntax-highlighting \
+    tmux \
+    openssh \
+    ripgrep \
+    fd \
+    zoxide \
+    lazygit \
+    fzf \
+    npm \
+    python \
+    python-uv \
+    mc \
+    man \
+    wget \
+    htop \
+    pv \
+    go \
+    yazi \
+    fastfetch \
+    eza \
+    postgresql \
+    meson \
+    ninja \
+    direnv \
+    rustup \
+    cargo \
+    libappindicator || { echo "pacman failed, aborting script."; exit 1; }
 
 if ! grep -qi microsoft /proc/sys/kernel/osrelease; then
-  #uncomment multilib
-  sed -i '/\[multilib\]/,/Include/ s/^#//' /etc/pacman.conf
-  ./tuxedo-pacman-installer.sh
-  #EOF needs to be all the way left or bash will get confused
-  cat <<EOF >> /etc/NetworkManager/conf.d/wifi_backend.conf
+    #uncomment multilib
+    sed -i '/\[multilib\]/,/Include/ s/^#//' /etc/pacman.conf
+    ./tuxedo-pacman-installer.sh
+    #EOF needs to be all the way left or bash will get confused
+    cat <<EOF >> /etc/NetworkManager/conf.d/wifi_backend.conf
 [device]
 wifi.backend=iwd
 EOF
 
-  cat <<EOF >> /etc/NetworkManager/conf.d/99-tailscale.conf
+    cat <<EOF >> /etc/NetworkManager/conf.d/99-tailscale.conf
 [keyfile]
 unmanaged-devices=interface-name:tailscale0
 EOF
@@ -83,28 +82,28 @@ fi
 
 #creating sudo group
 if ! getent group sudo > /dev/null; then
-  echo "Creating sudo group..."
-  groupadd sudo
+    echo "Creating sudo group..."
+    groupadd sudo
 fi
 
 #uncommenting sudo line in sudoers
 sed -i 's/^#\s*\(%sudo\s\+ALL=(ALL:ALL)\s\+ALL\)/\1/' /etc/sudoers
 
 while true; do
-  prompt_username
-  echo "Is this username correct: '$USERNAME'? (Y/n)"
-  read answer
-  answer=${answer:-N}
-  case "$answer" in
-    [Yy]*)
-      break
-      ;;
-    [Nn]*)
-      ;;
-    *)
-      echo "Please enter y or n."
-      ;;
-  esac
+    prompt_username
+    echo "Is this username correct: '$USERNAME'? (Y/n)"
+    read answer
+    answer=${answer:-N}
+    case "$answer" in
+        [Yy]*)
+            break
+            ;;
+        [Nn]*)
+            ;;
+        *)
+            echo "Please enter y or n."
+            ;;
+    esac
 done
 
 useradd -m -G sudo "$USERNAME"
@@ -113,7 +112,7 @@ loginctl enable-linger "$USERNAME"
 
 #EOF needs to be all the way left or bash will get confused
 if grep -qi microsoft /proc/sys/kernel/osrelease; then
-  cat <<EOF > /etc/wsl.conf
+    cat <<EOF > /etc/wsl.conf
 [user]
 default=$USERNAME
 EOF
@@ -151,12 +150,12 @@ runuser -l "$USERNAME" -c '
 
 #if wsl, clone win32yank
 if grep -qi microsoft /proc/sys/kernel/osrelease; then
-  mkdir -p /usr/local/bin
-  cd /tmp
-  curl -LO https://github.com/equalsraf/win32yank/releases/latest/download/win32yank-x64.zip
-  unzip win32yank-x64.zip
-  mv win32yank.exe /usr/local/bin/
-  chmod +x /usr/local/bin/win32yank.exe
+    mkdir -p /usr/local/bin
+    cd /tmp
+    curl -LO https://github.com/equalsraf/win32yank/releases/latest/download/win32yank-x64.zip
+    unzip win32yank-x64.zip
+    mv win32yank.exe /usr/local/bin/
+    chmod +x /usr/local/bin/win32yank.exe
 fi
 
 #sets up github ssh and clones the bernelius/dotfiles repo
@@ -174,7 +173,7 @@ runuser -l "$USERNAME" -c '
     CLIPBOARD="win32yank.exe -i"
   else
     CLIPBOARD="echo > /dev/null"
-  fi 
+  fi
 
   cd ~
   git clone https://github.com/bernelius/dotfiles
@@ -182,7 +181,7 @@ runuser -l "$USERNAME" -c '
   chmod +x install.sh
   ./install.sh
   git remote set-url origin git@github.com:bernelius/dotfiles.git
-  
+
   while true; do
     prompt_github_details
     echo "Is this information correct:"
@@ -202,7 +201,7 @@ runuser -l "$USERNAME" -c '
         ;;
     esac
   done
-  
+
 
 
   git config --global user.email "$EMAIL"
@@ -222,8 +221,8 @@ runuser -l "$USERNAME" -c '
 
 # daemons and groups
 if ! grep -qi microsoft /proc/sys/kernel/osrelease; then
-  runuser -l postgres -c 'initdb -D /var/lib/postgres/data'
-  runuser -l "$USERNAME" -c '
+    runuser -l postgres -c 'initdb -D /var/lib/postgres/data'
+    runuser -l "$USERNAME" -c '
     systemctl enable iwd
     systemctl enable bluetooth
     systemctl enable chronyd
@@ -242,17 +241,17 @@ echo ""
 echo "------------------------"
 runuser -l "$USERNAME" -c 'chsh -s /bin/zsh'
 if grep -qi microsoft /proc/sys/kernel/osrelease; then
-  echo "Welcome."
+    echo "Welcome."
 else
-  git clone https://www.github.com/bernelius/misc /tmp/misc
-  cd /tmp/misc
-  mkdir -p /home/"$USERNAME"/docs/img/wallpapers
-  cp /tmp/misc/wallpapers/* /home/"$USERNAME"/docs/img/wallpapers/
-  rm -rf /tmp/misc
+    git clone https://www.github.com/bernelius/misc /tmp/misc
+    cd /tmp/misc
+    mkdir -p /home/"$USERNAME"/docs/img/wallpapers
+    cp /tmp/misc/wallpapers/* /home/"$USERNAME"/docs/img/wallpapers/
+    rm -rf /tmp/misc
 
-  read -rp "Done. Press enter to reboot." ANSWER
-  if [[ -z "$ANSWER" ]]; then
-    reboot
-  fi
+    read -rp "Done. Press enter to reboot." ANSWER
+    if [[ -z "$ANSWER" ]]; then
+        reboot
+    fi
 fi
 

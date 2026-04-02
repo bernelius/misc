@@ -1,122 +1,125 @@
 #!/usr/bin/env bash
 pacman -Syu --noconfirm \
-archlinux-xdg-menu \
-base \
-base-devel \
-bluetui \
-bluez \
-bluez-utils \
-brightnessctl \
-btop \
-btrfs-progs \
-cliphist \
-cronie \
-dmidecode \
-dolphin \
-drawing \
-efibootmgr \
-eza \
-fastfetch \
-fd \
-figlet \
-firefox \
-font-manager \
-fuzzel \
-fzf \
-gamescope \
-ghostty \
-git \
-git-zsh-completion \
-github-cli \
-gnome-themes-extra \
-go \
-grim \
-gst-plugin-pipewire \
-htop \
-hypridle \
-hyprland \
-hyprlock \
-hyprpaper \
-hyprpicker \
-hyprpolkitagent \
-impala \
-intel-media-driver \
-intel-ucode \
-iwd \
-jq \
-kde-cli-tools \
-kservice5 \
-kvantum \
-lazygit \
-lib32-gnutls \
-lib32-mesa \
-lib32-mpg123 \
-lib32-vulkan-intel \
-libnotify \
-libpulse \
-libreoffice-fresh \
-libreoffice-fresh-nb \
-limine \
-linux \
-linux-firmware \
-linux-headers \
-lolcat \
-lutris \
-lvm2 \
-lxappearance \
-mako \
-man-db \
-mc \
-meson \
-mpv \
-neovim \
-networkmanager \
-ninja \
-npm \
-openssh \
-pavucontrol \
-pipewire \
-pipewire-alsa \
-pipewire-docs \
-pipewire-jack \
-pipewire-pulse \
-playerctl \
-postgresql \
-pv \
-python \
-python-pywal \
-qt6-wayland \
-qt6ct \
-ripgrep \
-satty \
-scdoc \
-slurp \
-sof-firmware \
-steam \
-thunderbird \
-snapper \
-snap-pac \
-tmux \
-tree-sitter-cli \
-ttf-jetbrains-mono-nerd \
-unzip \
-vim \
-vulkan-intel \
-waybar \
-wget \
-wine-staging \
-winetricks \
-wireplumber \
-wl-clipboard \
-xorg-xwayland \
-yazi \
-zoxide \
-zram-generator \
-zsh \
-zsh-completions \
-zsh-syntax-highlighting \
-calibre \
-swayosd \
-tailscale \
-chrony || { echo "pacman failed, aborting script."; exit 1; }
+    viu \
+    chafa \
+    ueberzugpp \
+    archlinux-xdg-menu \
+    base \
+    base-devel \
+    bluetui \
+    bluez \
+    bluez-utils \
+    brightnessctl \
+    btop \
+    btrfs-progs \
+    cliphist \
+    cronie \
+    dmidecode \
+    dolphin \
+    drawing \
+    efibootmgr \
+    eza \
+    fastfetch \
+    fd \
+    figlet \
+    firefox \
+    font-manager \
+    fuzzel \
+    fzf \
+    gamescope \
+    ghostty \
+    git \
+    git-zsh-completion \
+    github-cli \
+    gnome-themes-extra \
+    go \
+    grim \
+    gst-plugin-pipewire \
+    htop \
+    hypridle \
+    hyprland \
+    hyprlock \
+    hyprpaper \
+    hyprpicker \
+    hyprpolkitagent \
+    impala \
+    intel-media-driver \
+    intel-ucode \
+    iwd \
+    jq \
+    kde-cli-tools \
+    kservice5 \
+    kvantum \
+    lazygit \
+    lib32-gnutls \
+    lib32-mesa \
+    lib32-mpg123 \
+    lib32-vulkan-intel \
+    libnotify \
+    libpulse \
+    libreoffice-fresh \
+    libreoffice-fresh-nb \
+    limine \
+    linux \
+    linux-firmware \
+    linux-headers \
+    lolcat \
+    lutris \
+    lvm2 \
+    lxappearance \
+    mako \
+    man-db \
+    mc \
+    meson \
+    mpv \
+    neovim \
+    networkmanager \
+    ninja \
+    npm \
+    openssh \
+    pavucontrol \
+    pipewire \
+    pipewire-alsa \
+    pipewire-docs \
+    pipewire-jack \
+    pipewire-pulse \
+    playerctl \
+    postgresql \
+    pv \
+    python \
+    python-pywal \
+    qt6-wayland \
+    qt6ct \
+    ripgrep \
+    satty \
+    scdoc \
+    slurp \
+    sof-firmware \
+    steam \
+    thunderbird \
+    snapper \
+    snap-pac \
+    tmux \
+    tree-sitter-cli \
+    ttf-jetbrains-mono-nerd \
+    unzip \
+    vim \
+    vulkan-intel \
+    waybar \
+    wget \
+    wine-staging \
+    winetricks \
+    wireplumber \
+    wl-clipboard \
+    xorg-xwayland \
+    yazi \
+    zoxide \
+    zram-generator \
+    zsh \
+    zsh-completions \
+    zsh-syntax-highlighting \
+    calibre \
+    swayosd \
+    tailscale \
+    chrony || { echo "pacman failed, aborting script."; exit 1; }
 
