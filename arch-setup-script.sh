@@ -222,10 +222,15 @@ runuser -l "$USERNAME" -c '
 # daemons and groups
 if ! grep -qi microsoft /proc/sys/kernel/osrelease; then
     runuser -l postgres -c 'initdb -D /var/lib/postgres/data'
+
+    # Install Mullvad + Tailscale coexistence fix
+    bash ./modules/mullscaled/install.sh
+
     runuser -l "$USERNAME" -c '
     systemctl enable iwd
     systemctl enable bluetooth
     systemctl enable chronyd
+    systemctl enable NetworkManager
     systemctl --user enable hyprpolkitagent
     systemctl enable postgresql
   '

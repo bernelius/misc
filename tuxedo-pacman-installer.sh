@@ -121,5 +121,6 @@ pacman -Syu --noconfirm \
     calibre \
     swayosd \
     tailscale \
+    nftables \
     chrony || { echo "pacman failed, aborting script."; exit 1; }
 

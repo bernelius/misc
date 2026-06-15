@@ -1,0 +1,3 @@
+[submodule "modules/mullscaled"]
+	path = modules/mullscaled
+	url = git@github.com:bernelius/mullscaled
